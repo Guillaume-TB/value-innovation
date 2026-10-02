@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Empathy on the Edge — entraînement QCM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1B2A41;
+    --ink-soft: #4A5A72;
+    --paper: #FBFCFA;
+    --glass: #DCEBE7;
+    --glass-deep: #A9CBC3;
+    --signal: #F2C14E;
+    --right: #2F7D5B;
+    --wrong: #B23A48;
+    --line: #C9D6D2;
+    --sans: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #E6EEF0; --ink-soft: #A7B7C2; --paper: #111C2B;
+      --glass: #1C2D40; --glass-deep: #2C4A5A; --line: #2E4255;
+      --right: #5DBB8F; --wrong: #E07A86;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: var(--serif); font-size: 18px; line-height: 1.6;
+    padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+
+  h1 {
+    font-family: var(--sans); font-weight: 800; letter-spacing: -0.03em;
+    font-size: clamp(2.6rem, 9vw, 4.6rem); line-height: 0.92; margin: 0 0 1rem;
+  }
+  h1 span { display: block; padding-left: 0.9em; }
+  .lede { color: var(--ink-soft); max-width: 34em; margin: 0 0 2rem; }
+
+  /* Signal strip: one tick per question */
+  .signal { display: flex; gap: 3px; height: 34px; align-items: flex-end; margin: 0 0 1.5rem; }
+  .tick { flex: 1; height: 30%; background: var(--line); border-radius: 2px; transition: height .25s, background .25s; }
+  .tick.now { height: 100%; background: var(--signal); }
+  .tick.ok { height: 60%; background: var(--right); }
+  .tick.ko { height: 60%; background: var(--wrong); }
+  @media (prefers-reduced-motion: reduce) { .tick { transition: none; } }
+
+  .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .6rem; margin-bottom: 1.25rem; }
+  .mode {
+    font: 600 1rem/1.3 var(--sans); text-align: left; cursor: pointer;
+    padding: .9rem 1rem; border: 1.5px solid var(--line); border-radius: 10px;
+    background: transparent; color: var(--ink);
+  }
+  .mode small { display: block; font-weight: 400; color: var(--ink-soft); font-size: .85rem; margin-top: .2rem; }
+  .mode:hover { border-color: var(--ink-soft); }
+  .mode[disabled] { opacity: .45; cursor: not-allowed; }
+  label.toggle { font-family: var(--sans); font-size: .95rem; display: inline-flex; gap: .5rem; align-items: center; color: var(--ink-soft); }
+
+  .meta { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); display: flex; justify-content: space-between; margin-bottom: .5rem; }
+  .question { font-size: 1.3rem; line-height: 1.45; margin: 0 0 1.25rem; font-weight: 600; }
+  .options { display: grid; gap: .55rem; }
+  .opt {
+    display: grid; grid-template-columns: 2rem 1fr; gap: .5rem; align-items: start;
+    width: 100%; text-align: left; cursor: pointer;
+    font: 400 1.02rem/1.45 var(--serif); color: var(--ink);
+    padding: .8rem .9rem; border: 1.5px solid var(--line); border-radius: 10px; background: transparent;
+  }
+  .opt .key { font: 600 .9rem/1.6 var(--sans); color: var(--ink-soft); }
+  .opt:hover:not([disabled]) { border-color: var(--ink); }
+  .opt[disabled] { cursor: default; }
+  .opt.correct { border-color: var(--right); background: color-mix(in srgb, var(--right) 12%, transparent); }
+  .opt.chosen-wrong { border-color: var(--wrong); background: color-mix(in srgb, var(--wrong) 12%, transparent); }
+
+  .why {
+    margin-top: 1.1rem; padding: 1rem 1.1rem; border-radius: 10px; background: var(--glass);
+    border-left: 4px solid var(--glass-deep);
+  }
+  .why strong { font-family: var(--sans); display: block; margin-bottom: .25rem; }
+  .why.ok { border-left-color: var(--right); }
+  .why.ko { border-left-color: var(--wrong); }
+
+  .actions { margin-top: 1.4rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+  .btn {
+    font: 600 1rem/1 var(--sans); cursor: pointer; padding: .85rem 1.3rem; border-radius: 999px;
+    border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper);
+  }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  :focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+
+  .score { font-family: var(--sans); font-weight: 800; font-size: clamp(4rem, 18vw, 7rem); line-height: 1; letter-spacing: -0.04em; margin: .5rem 0; }
+  .score small { font-size: .35em; color: var(--ink-soft); font-weight: 600; letter-spacing: 0; }
+  .review { margin-top: 2rem; }
+  .review h2 { font-family: var(--sans); font-size: 1.3rem; margin: 0 0 .75rem; }
+  .review-item { padding: .9rem 0; border-top: 1px solid var(--line); }
+  .review-item p { margin: .2rem 0; }
+  .review-item .ans { color: var(--right); font-weight: 600; }
+  .review-item .yours { color: var(--wrong); }
+  .review-item .ex { color: var(--ink-soft); font-size: .95rem; }
+  .hint { font-family: var(--sans); font-size: .85rem; color: var(--ink-soft); margin-top: 1.5rem; }
+  footer { font-family: var(--sans); font-size: .8rem; color: var(--ink-soft); margin-top: 3rem; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <section id="home">
+    <h1>Empathy <span>on the Edge</span></h1>
+    <p class="lede">Entraînement QCM sur l'article de Battarbee, Fulton Suri et Gibbs Howard (Rotman Management, Winter 2015). Questions en anglais, explications en français.</p>
+    <div class="modes">
+      <button class="mode" data-mode="1">Faits et cas<small>12 questions</small></button>
+      <button class="mode" data-mode="2">Concepts<small>15 questions</small></button>
+      <button class="mode" data-mode="all">Tout l'article<small>27 questions</small></button>
+      <button class="mode" data-mode="missed" id="missedBtn">Mes erreurs<small id="missedCount">aucune pour l'instant</small></button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="shuffle" checked> Mélanger questions et réponses</label>
+  </section>
+
+  <section id="quiz" hidden>
+    <div class="signal" id="signal" aria-hidden="true"></div>
+    <div class="meta"><span id="counter"></span><span id="running"></span></div>
+    <p class="question" id="qText"></p>
+    <div class="options" id="opts"></div>
+    <div class="why" id="why" hidden></div>
+    <div class="actions">
+      <button class="btn" id="next" hidden>Question suivante</button>
+      <button class="btn ghost" id="quit">Arrêter</button>
+    </div>
+    <p class="hint">Clavier : touches 1 à 4 pour répondre, Entrée pour continuer.</p>
+  </section>
+
+  <section id="result" hidden>
+    <div class="signal" id="signalEnd" aria-hidden="true"></div>
+    <p class="score" id="score"></p>
+    <p id="verdict"></p>
+    <div class="actions">
+      <button class="btn" id="retryWrong">Refaire mes erreurs</button>
+      <button class="btn ghost" id="home2">Changer de série</button>
+    </div>
+    <div class="review" id="review"></div>
+  </section>
+
+  <footer>Outil de révision personnel. L'article reste la propriété de Rotman Management.</footer>
+</main>
+
+<script>
+// Questions — "Empathy on the Edge" (Battarbee, Fulton Suri & Gibbs Howard, Rotman Management, Winter 2015)
+// Format : { set, q, options: [..], answer: index, why }
+const QUESTIONS = [
+  // ---------- SET 1 : Facts & cases ----------
+  { set: 1, q: "What was John Stoddard's first assignment at Moggridge Associates, and where did he go to carry it out?",
+    options: ["Redesigning fishing nets; Plymouth and Cornwall",
+              "Redesigning marine radios; Hull and Grimsby on England's northeastern coast",
+              "Redesigning marine radios; Liverpool on England's northwestern coast",
+              "Designing navigation instruments; Aberdeen in Scotland"],
+    answer: 1,
+    why: "Années 1970 : Stoddard doit redessiner des radios marines. Il part à Hull et Grimsby rencontrer les pêcheurs sur leurs bateaux, et revient convaincu de la valeur de l'observation des gens dans leur contexte." },
+  { set: 1, q: "Who later brought this observation-based approach to IDEO?",
+    options: ["Tim Brown, IDEO's CEO", "John Stoddard himself", "Bill Moggridge, co-founder of the firm", "Jane Fulton Suri, Chief Creative Officer"],
+    answer: 2,
+    why: "C'est Bill Moggridge, co-fondateur de Moggridge Associates. Tim Brown est cité ailleurs, pour sa définition de l'empathie comme « mental habit »." },
+  { set: 1, q: "According to the article, Tim Brown described design empathy as a ________, while the authors add that it is also a ________.",
+    options: ["research method / management tool", "mental habit / fundamental cultural value", "cultural value / mental habit", "creative skill / competitive advantage"],
+    answer: 1,
+    why: "Tim Brown : « mental habit ». Les auteurs ajoutent : « fundamental cultural value ». Attention au piège de l'inversion." },
+  { set: 1, q: "When empathic design first appeared in business literature, what was identified as its MOST significant contribution?",
+    options: ["Reducing the cost of iterative prototyping", "Uncovering people's unspoken, latent needs", "Improving the accuracy of market surveys", "Aligning stakeholders in complex organizations"],
+    answer: 1,
+    why: "Fin des années 1990 : un processus (observation, données, prototypage itératif). « Most significantly » : révéler les besoins latents, non exprimés, puis y répondre. La promesse était financière." },
+  { set: 1, q: "According to the article, in what year did Danone partner with the Grameen Foundation, and where was the plant located?",
+    options: ["2006; Dhaka, Bangladesh", "1996; Bogra District, Bangladesh", "1996; Bogra District, India", "2006; Chittagong, Bangladesh"],
+    answer: 1,
+    why: "L'article indique 1996, district de Bogra, Bangladesh. (Dans la réalité c'était 2006, mais pour l'examen, retiens le texte.)" },
+  { set: 1, q: "Which creative solution from the Bangladesh factory does the article say has huge potential in other markets?",
+    options: ["Solar-powered refrigeration units", "Biodegradable yogurt packaging", "Using enzymes to keep unrefrigerated milk fresh longer", "A village micro-distribution network"],
+    answer: 2,
+    why: "Des enzymes pour conserver plus longtemps le lait non réfrigéré. Les employés affichent aussi des photos des villageois dans les bureaux de Danone." },
+  { set: 1, q: "After the hospital's analogous-experience exercise, what result was achieved regarding patient discharge?",
+    options: ["30% left before noon, meeting the 30% goal", "Nearly 50% left before noon, exceeding the 30% goal", "Nearly 50% left before noon, short of the 60% goal", "Discharge time was cut in half"],
+    answer: 1,
+    why: "Près de 50 % des patients sortaient avant midi, pour un objectif de 30 %." },
+  { set: 1, q: "In the pharmaceutical long-term immersion, which description is accurate?",
+    options: ["A week-long exercise for 35 people with daily mock injections",
+              "A month-long exercise for 35 people, each with four prototypes, giving themselves mock injections once a week",
+              "A month-long exercise for 53 people, each with one prototype and real injections",
+              "A two-month exercise for the whole company with weekly patient interviews"],
+    answer: 1,
+    why: "Un mois, 35 membres du client, 4 prototypes chacun gardés au frigo, un profil patient à incarner, une fausse injection par semaine, journal d'expérience et imprévus hebdomadaires (jus renversé, avion de dernière minute)." },
+  { set: 1, q: "In the 'progressive discovery' case, what did the four-day journey concern?",
+    options: ["Chinese consumers' attitudes toward American food brands",
+              "Urban Chinese women's attitudes about contraception, for an American company",
+              "Rural Chinese families' healthcare choices, for a Chinese hospital",
+              "Young American women's birth-control decisions, for a US nonprofit"],
+    answer: 1,
+    why: "Jour 1 : 4 profils et 4 interviews avec interprète. Jours 2-3 : médecins pratiquant l'avortement, pharmaciens, « love hotel » à Shanghai. Jour 4 : les clients repensent leur offre. L'option d, c'est Bedsider : ne pas confondre." },
+  { set: 1, q: "The Shanghai 'love hotel' visited during the journey rented rooms in increments of:",
+    options: ["One hour", "Two hours", "Three hours", "Half a day"],
+    answer: 2,
+    why: "« Three-hour increments »." },
+  { set: 1, q: "How many employees has the European telecom walked through its own version of the 'experience exhibition'?",
+    options: ["More than 300", "More than 3,000", "More than 30,000", "All 35 members of the strategy team"],
+    answer: 1,
+    why: "Plus de 3 000. Le 30 000 est la taille de l'organisation du cas « mini documentaires », 35 le cas pharma." },
+  { set: 1, q: "Which of the following was NOT mentioned as something IDEO teams did to develop emotional resonance?",
+    options: ["Shadowing sales representatives and bank tellers", "Sleeping on rubber sheets in an elder-care facility", "Participating in gruelling endurance events", "Spending a night as a patient in an emergency room"],
+    answer: 3,
+    why: "Les trois exemples du texte sont a, b et c. Une légende photo mentionne aussi un designer qui se fait épiler le torse pour les patients soignés pour des plaies. Rien sur les urgences." },
+
+  // ---------- SET 2 : Concepts & reasoning ----------
+  { set: 2, q: "Which statement best captures the article's central argument?",
+    options: ["Empathy should replace quantitative analysis in innovation projects",
+              "Empathy is mainly the job of a dedicated design team",
+              "Empathy must extend to a broader range of stakeholders and endure beyond the timeframe of a single project",
+              "Empathy is most effective when kept within a small group of highly involved stakeholders"],
+    answer: 2,
+    why: "Conclusion : l'empathie doit toucher un spectre plus large de parties prenantes (scaling) et durer au-delà du projet (sustaining)." },
+  { set: 2, q: "Which of the following is presented as an approach to SUSTAINING (not scaling) design empathy?",
+    options: ["Progressive discovery", "Analogous experiences", "Telling stories, documentary-style", "Long-term immersion"],
+    answer: 2,
+    why: "Scaling : progressive discovery, analogous experiences, long-term immersion. Sustaining : documentary stories, embed stories in data, visceral journeys." },
+  { set: 2, q: "Why, according to the authors, can analogous experiences have MORE transformative power than passive observation of users?",
+    options: ["They are cheaper and less risky than field visits", "They require some effort on the clients' part to engage", "They rely on real users rather than actors", "They provide more accurate quantitative data"],
+    answer: 1,
+    why: "Elles demandent un effort d'engagement aux clients. Elles donnent aussi plus de latitude et impliquent des groupes plus larges sans perdre l'impact émotionnel. Elles ne sont pas moins risquées : le dîner de l'hôpital l'était." },
+  { set: 2, q: "What observation inspired the restaurant analogy in the hospital project?",
+    options: ["There was no boundary between 'public access' and 'backstage', as if diners ate in the kitchen among the chefs",
+              "Hospital food was poor and served late",
+              "Staff were too few, like an understaffed restaurant",
+              "Patients could not choose their treatment, like a fixed-menu restaurant"],
+    answer: 0,
+    why: "Pas de frontière entre public et coulisses. D'où le dîner simulé : serveurs-acteurs brusques, bavoirs peu flatteurs, plats non expliqués, attente sans explication." },
+  { set: 2, q: "What does the article say empathic design is really about (rather than being emotional all the time)?",
+    options: ["Staying emotionally engaged at all times", "Being primarily an analytical, data-driven discipline", "Balancing empathizing with an experience and analyzing its nature and components", "Relying on subconscious intuition"],
+    answer: 2,
+    why: "« Thinking and feeling, rigorously and deeply » : un équilibre entre empathie et analyse." },
+  { set: 2, q: "Research cited in the article says empathy increases 'field-dependent thinking'. What does this type of thinking help us do?",
+    options: ["Focus on isolated details without distraction", "Put information in context and pick up contextual cues from the environment", "Think independently from the opinions of others", "Apply fixed rules regardless of the situation"],
+    answer: 1,
+    why: "Replacer l'information dans son contexte, capter les indices de l'environnement. L'empathie est aussi « contagious »." },
+  { set: 2, q: "According to the article, which INDIVIDUAL trait, often useful for business success, can block empathy?",
+    options: ["Lack of natural compassion", "Excessive attention to legal hurdles", "Insufficient market research", "Inability to temporarily let go of one's role, status, expertise or opinion"],
+    answer: 3,
+    why: "Obstacle individuel, pas organisationnel. Le texte dit au contraire que la compassion n'est pas difficile pour la plupart des gens." },
+  { set: 2, q: "Why may management lose touch with what customers experience, according to the article?",
+    options: ["Customers are increasingly diverse and hard to reach", "Attention is drawn toward legal hurdles, competitive pressures and technological obstacles", "Designers refuse to share their insights", "Empathy is too expensive to scale"],
+    answer: 1,
+    why: "Le stress de la gestion étouffe l'empathie : l'attention part vers le juridique, la concurrence, la technologie." },
+  { set: 2, q: "Why do the authors increasingly embed stories in quantitative data?",
+    options: ["Qualitative stories are unreliable and should be secondary",
+              "Behaviour observed once in a small sample may be dismissed as an anomaly or given too much weight",
+              "Clients only trust numbers",
+              "Quantitative data generates more emotional impact"],
+    answer: 1,
+    why: "Les deux risques. Exemple : la jeune femme aux multiples appareils semblait unique, mais représentait tout un segment d'early adopters. Approche hybride : le qualitatif révèle les histoires, le quantitatif donne le contexte de marché et l'impact potentiel." },
+  { set: 2, q: "What research finding shaped the design of Bedsider.org?",
+    options: ["Women trusted medical authority figures most, so doctors were filmed",
+              "A formal, informative tone was most effective",
+              "Women empathized more easily with one another than with an authority figure, and a slightly cheeky tone worked best",
+              "Anonymous text testimonials were preferred over videos"],
+    answer: 2,
+    why: "Vidéos de femmes parlant contraception comme à une amie, ton franc mais léger. Client : National Campaign to Prevent Teen and Adult Unplanned Pregnancy." },
+  { set: 2, q: "What was the specific purpose of the pharmaceutical long-term immersion?",
+    options: ["To make the client empathize with the cumulative effect of small inconveniences that are easily overlooked when larger problems seem more critical",
+              "To test the drug's medical efficacy",
+              "To reduce production costs of the injection device",
+              "To train sales representatives to sell the therapy"],
+    answer: 0,
+    why: "Contrepoids aux « gros » problèmes. Résultat : des dizaines d'idées (emballage, instructions, service client)." },
+  { set: 2, q: "What is 'the broadest definition of design' given in the article?",
+    options: ["It makes products both functional and beautiful", "It transforms current situations into preferred ones", "It solves problems through iterative prototyping", "It aligns business goals with technology"],
+    answer: 1,
+    why: "Quand ces situations préférées s'alignent sur les objectifs de plusieurs parties prenantes, tout le monde y gagne." },
+  { set: 2, q: "When a whole company tries to become more human-centred, what do the authors say is required to SUSTAIN empathy?",
+    options: ["Presenting research insights to the larger group in a clear slide deck", "Having one team undergo a transformative field experience", "Making all stakeholders intrinsically motivated", "Linking bonuses to customer satisfaction scores"],
+    answer: 2,
+    why: "Présenter des insights fonctionne rarement, une seule équipe transformée ne suffit pas : il faut une motivation intrinsèque de toutes les parties prenantes." },
+  { set: 2, q: "'Visceral journeys' like the telecom's 'tunnel of paperwork' are presented as a way for which kind of business to begin fostering empathy?",
+    options: ["Companies with large research budgets", "Organizations operating across several cultures", "Companies that have already scaled empathy successfully", "Businesses that do not start off with an empathic environment"],
+    answer: 3,
+    why: "Le telecom voulait une stratégie tarifaire centrée client. « Experience exhibition » multisensorielle, recréée ensuite dans son centre de formation." },
+  { set: 2, q: "According to the article, what is driving many companies to adopt new practices around energy, sourcing, production and sustainability?",
+    options: ["Shorter product life cycles", "Being held accountable for their long-term social and environmental impacts", "The decline of brand loyalty", "Stricter consumer-protection regulation"],
+    answer: 1,
+    why: "Les produits n'ont jamais été conçus en vase clos, mais tout apparaît aujourd'hui plus clairement lié à un écosystème plus large." }
+];
+
+</script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const STORE = "empathy-quiz-missed";
+  let deck = [], i = 0, good = 0, results = [], answered = false;
+
+  function loadMissed() {
+    try { return JSON.parse(localStorage.getItem(STORE)) || []; } catch (e) { return []; }
+  }
+  function saveMissed(list) {
+    try { localStorage.setItem(STORE, JSON.stringify([...new Set(list)])); } catch (e) {}
+  }
+  function refreshMissed() {
+    const n = loadMissed().length;
+    $("missedCount").textContent = n ? n + " question" + (n > 1 ? "s" : "") + " à revoir" : "aucune pour l'instant";
+    $("missedBtn").disabled = n === 0;
+  }
+  function shuffle(a) {
+    a = a.slice();
+    for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; }
+    return a;
+  }
+  function show(id) { ["home", "quiz", "result"].forEach(s => $(s).hidden = s !== id); window.scrollTo(0, 0); }
+
+  function start(indices) {
+    const mix = $("shuffle").checked;
+    const order = mix ? shuffle(indices) : indices;
+    deck = order.map(idx => {
+      const src = QUESTIONS[idx];
+      let opts = src.options.map((text, k) => ({ text, ok: k === src.answer }));
+      if (mix) opts = shuffle(opts);
+      return { idx, q: src.q, opts, why: src.why };
+    });
+    i = 0; good = 0; results = [];
+    $("signal").innerHTML = deck.map(() => '<span class="tick"></span>').join("");
+    show("quiz"); render();
+  }
+
+  function render() {
+    answered = false;
+    const item = deck[i];
+    [...$("signal").children].forEach((t, k) => t.classList.toggle("now", k === i));
+    $("counter").textContent = "Question " + (i + 1) + " sur " + deck.length;
+    $("running").textContent = good + " juste" + (good > 1 ? "s" : "");
+    $("qText").textContent = item.q;
+    $("opts").innerHTML = "";
+    item.opts.forEach((o, k) => {
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.innerHTML = '<span class="key">' + (k + 1) + '</span><span></span>';
+      b.lastChild.textContent = o.text;
+      b.addEventListener("click", () => answer(k));
+      $("opts").appendChild(b);
+    });
+    $("why").hidden = true; $("next").hidden = true;
+    $("opts").firstChild.focus({ preventScroll: true });
+  }
+
+  function answer(k) {
+    if (answered) return;
+    answered = true;
+    const item = deck[i], ok = item.opts[k].ok;
+    const buttons = [...$("opts").children];
+    buttons.forEach((b, n) => {
+      b.disabled = true;
+      if (item.opts[n].ok) b.classList.add("correct");
+      else if (n === k) b.classList.add("chosen-wrong");
+    });
+    if (ok) good++;
+    results.push({ item, chosen: k, ok });
+    const tick = $("signal").children[i];
+    tick.classList.remove("now"); tick.classList.add(ok ? "ok" : "ko");
+    $("why").className = "why " + (ok ? "ok" : "ko");
+    $("why").innerHTML = "<strong>" + (ok ? "Juste." : "Raté.") + "</strong><span></span>";
+    $("why").lastChild.textContent = item.why;
+    $("why").hidden = false;
+    $("running").textContent = good + " juste" + (good > 1 ? "s" : "");
+    $("next").textContent = i + 1 < deck.length ? "Question suivante" : "Voir mon score";
+    $("next").hidden = false; $("next").focus({ preventScroll: true });
+  }
+
+  function next() { if (i + 1 < deck.length) { i++; render(); } else finish(); }
+
+  function finish() {
+    let missed = loadMissed();
+    results.forEach(r => {
+      if (r.ok) missed = missed.filter(x => x !== r.item.idx);
+      else missed.push(r.item.idx);
+    });
+    saveMissed(missed); refreshMissed();
+
+    const pct = Math.round(100 * good / deck.length);
+    $("score").innerHTML = good + "<small> / " + deck.length + "</small>";
+    $("verdict").textContent = pct >= 85 ? "Prêt pour l'examen." : pct >= 60 ? "Bonne base, revois les explications ci-dessous." : "Relis les cas et le classement scaling / sustaining, puis refais tes erreurs.";
+    $("signalEnd").innerHTML = results.map(r => '<span class="tick ' + (r.ok ? "ok" : "ko") + '"></span>').join("");
+
+    const wrong = results.filter(r => !r.ok);
+    $("retryWrong").hidden = wrong.length === 0;
+    $("review").innerHTML = wrong.length ? "<h2>À revoir</h2>" : "";
+    wrong.forEach(r => {
+      const div = document.createElement("div");
+      div.className = "review-item";
+      const right = r.item.opts.find(o => o.ok).text;
+      div.innerHTML = "<p></p><p class='ans'></p><p class='yours'></p><p class='ex'></p>";
+      div.children[0].textContent = r.item.q;
+      div.children[1].textContent = "Bonne réponse : " + right;
+      div.children[2].textContent = "Ta réponse : " + r.item.opts[r.chosen].text;
+      div.children[3].textContent = r.item.why;
+      $("review").appendChild(div);
+    });
+    show("result");
+  }
+
+  document.querySelectorAll(".mode").forEach(b => b.addEventListener("click", () => {
+    const m = b.dataset.mode;
+    const all = QUESTIONS.map((_, k) => k);
+    if (m === "all") start(all);
+    else if (m === "missed") start(loadMissed().filter(k => k < QUESTIONS.length));
+    else start(all.filter(k => QUESTIONS[k].set === Number(m)));
+  }));
+  $("next").addEventListener("click", next);
+  $("quit").addEventListener("click", () => show("home"));
+  $("home2").addEventListener("click", () => show("home"));
+  $("retryWrong").addEventListener("click", () => start(results.filter(r => !r.ok).map(r => r.item.idx)));
+
+  document.addEventListener("keydown", (e) => {
+    if ($("quiz").hidden) return;
+    const n = parseInt(e.key, 10);
+    if (!answered && n >= 1 && n <= deck[i].opts.length) { answer(n - 1); e.preventDefault(); }
+    else if (answered && e.key === "Enter" && document.activeElement !== $("next")) { next(); e.preventDefault(); }
+  });
+
+  refreshMissed();
+})();
+</script>
+</body>
+</html>
