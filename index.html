@@ -9,15 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #1B2A41;
-    --ink-soft: #4A5A72;
-    --paper: #FBFCFA;
-    --glass: #DCEBE7;
-    --glass-deep: #A9CBC3;
-    --signal: #F2C14E;
-    --right: #2F7D5B;
-    --wrong: #B23A48;
-    --line: #C9D6D2;
+    --ink: #1B2A41; --ink-soft: #4A5A72; --paper: #FBFCFA;
+    --glass: #DCEBE7; --glass-deep: #A9CBC3; --signal: #F2C14E;
+    --right: #2F7D5B; --wrong: #B23A48; --line: #C9D6D2;
     --sans: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
     --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   }
@@ -30,20 +24,21 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--paper); color: var(--ink); }
-  body {
-    font-family: var(--serif); font-size: 18px; line-height: 1.6;
-    padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
-  }
+  body { font-family: var(--serif); font-size: 18px; line-height: 1.6;
+    padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0); }
   main { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
-
-  h1 {
-    font-family: var(--sans); font-weight: 800; letter-spacing: -0.03em;
-    font-size: clamp(2.6rem, 9vw, 4.6rem); line-height: 0.92; margin: 0 0 1rem;
-  }
+  h1 { font-family: var(--sans); font-weight: 800; letter-spacing: -0.03em;
+    font-size: clamp(2.6rem, 9vw, 4.6rem); line-height: 0.92; margin: 0 0 1rem; }
   h1 span { display: block; padding-left: 0.9em; }
-  .lede { color: var(--ink-soft); max-width: 34em; margin: 0 0 2rem; }
+  h2 { font-family: var(--sans); font-size: 1.35rem; margin: 2.5rem 0 .75rem; }
+  .lede { color: var(--ink-soft); max-width: 34em; margin: 0 0 1.5rem; }
 
-  /* Signal strip: one tick per question */
+  .who { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
+  .who label { font-family: var(--sans); font-weight: 600; }
+  .who input { font: 400 1.05rem var(--serif); padding: .6rem .8rem; border-radius: 10px;
+    border: 1.5px solid var(--line); background: transparent; color: var(--ink); min-width: 0; flex: 1 1 180px; max-width: 280px; }
+  .who input:focus { border-color: var(--ink); }
+
   .signal { display: flex; gap: 3px; height: 34px; align-items: flex-end; margin: 0 0 1.5rem; }
   .tick { flex: 1; height: 30%; background: var(--line); border-radius: 2px; transition: height .25s, background .25s; }
   .tick.now { height: 100%; background: var(--signal); }
@@ -52,56 +47,57 @@
   @media (prefers-reduced-motion: reduce) { .tick { transition: none; } }
 
   .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .6rem; margin-bottom: 1.25rem; }
-  .mode {
-    font: 600 1rem/1.3 var(--sans); text-align: left; cursor: pointer;
-    padding: .9rem 1rem; border: 1.5px solid var(--line); border-radius: 10px;
-    background: transparent; color: var(--ink);
-  }
+  .mode { font: 600 1rem/1.3 var(--sans); text-align: left; cursor: pointer; padding: .9rem 1rem;
+    border: 1.5px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); }
   .mode small { display: block; font-weight: 400; color: var(--ink-soft); font-size: .85rem; margin-top: .2rem; }
-  .mode:hover { border-color: var(--ink-soft); }
+  .mode:hover:not([disabled]) { border-color: var(--ink-soft); }
   .mode[disabled] { opacity: .45; cursor: not-allowed; }
   label.toggle { font-family: var(--sans); font-size: .95rem; display: inline-flex; gap: .5rem; align-items: center; color: var(--ink-soft); }
 
   .meta { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); display: flex; justify-content: space-between; margin-bottom: .5rem; }
   .question { font-size: 1.3rem; line-height: 1.45; margin: 0 0 1.25rem; font-weight: 600; }
   .options { display: grid; gap: .55rem; }
-  .opt {
-    display: grid; grid-template-columns: 2rem 1fr; gap: .5rem; align-items: start;
-    width: 100%; text-align: left; cursor: pointer;
-    font: 400 1.02rem/1.45 var(--serif); color: var(--ink);
-    padding: .8rem .9rem; border: 1.5px solid var(--line); border-radius: 10px; background: transparent;
-  }
+  .opt { display: grid; grid-template-columns: 2rem 1fr; gap: .5rem; align-items: start; width: 100%; text-align: left; cursor: pointer;
+    font: 400 1.02rem/1.45 var(--serif); color: var(--ink); padding: .8rem .9rem; border: 1.5px solid var(--line); border-radius: 10px; background: transparent; }
   .opt .key { font: 600 .9rem/1.6 var(--sans); color: var(--ink-soft); }
   .opt:hover:not([disabled]) { border-color: var(--ink); }
   .opt[disabled] { cursor: default; }
   .opt.correct { border-color: var(--right); background: color-mix(in srgb, var(--right) 12%, transparent); }
   .opt.chosen-wrong { border-color: var(--wrong); background: color-mix(in srgb, var(--wrong) 12%, transparent); }
-
-  .why {
-    margin-top: 1.1rem; padding: 1rem 1.1rem; border-radius: 10px; background: var(--glass);
-    border-left: 4px solid var(--glass-deep);
-  }
+  .why { margin-top: 1.1rem; padding: 1rem 1.1rem; border-radius: 10px; background: var(--glass); border-left: 4px solid var(--glass-deep); }
   .why strong { font-family: var(--sans); display: block; margin-bottom: .25rem; }
   .why.ok { border-left-color: var(--right); }
   .why.ko { border-left-color: var(--wrong); }
 
   .actions { margin-top: 1.4rem; display: flex; gap: .6rem; flex-wrap: wrap; }
-  .btn {
-    font: 600 1rem/1 var(--sans); cursor: pointer; padding: .85rem 1.3rem; border-radius: 999px;
-    border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper);
-  }
+  .btn { font: 600 1rem/1 var(--sans); cursor: pointer; padding: .85rem 1.3rem; border-radius: 999px;
+    border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); }
   .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.small { padding: .55rem .9rem; font-size: .9rem; }
   :focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
 
   .score { font-family: var(--sans); font-weight: 800; font-size: clamp(4rem, 18vw, 7rem); line-height: 1; letter-spacing: -0.04em; margin: .5rem 0; }
   .score small { font-size: .35em; color: var(--ink-soft); font-weight: 600; letter-spacing: 0; }
-  .review { margin-top: 2rem; }
-  .review h2 { font-family: var(--sans); font-size: 1.3rem; margin: 0 0 .75rem; }
   .review-item { padding: .9rem 0; border-top: 1px solid var(--line); }
   .review-item p { margin: .2rem 0; }
   .review-item .ans { color: var(--right); font-weight: 600; }
   .review-item .yours { color: var(--wrong); }
   .review-item .ex { color: var(--ink-soft); font-size: .95rem; }
+
+  .board { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .95rem; }
+  th, td { text-align: left; padding: .6rem .5rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--ink-soft); font-weight: 600; font-size: .85rem; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.me td { font-weight: 700; }
+  .namebtn { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .bar { display: inline-block; height: .55rem; border-radius: 3px; background: var(--right); vertical-align: middle; margin-right: .4rem; }
+  .note { font-family: var(--sans); font-size: .85rem; color: var(--ink-soft); margin: .5rem 0 0; }
+  .detail { margin-top: 1.25rem; padding: 1rem 1.1rem; border-radius: 10px; background: var(--glass); }
+  .detail h3 { font-family: var(--sans); margin: 0 0 .5rem; font-size: 1.1rem; }
+  .detail p { margin: .3rem 0; }
+  .hard li { margin-bottom: .5rem; }
+  .hard .pct { font-family: var(--sans); font-weight: 700; color: var(--wrong); }
   .hint { font-family: var(--sans); font-size: .85rem; color: var(--ink-soft); margin-top: 1.5rem; }
   footer { font-family: var(--sans); font-size: .8rem; color: var(--ink-soft); margin-top: 3rem; }
   [hidden] { display: none !important; }
@@ -112,14 +108,20 @@
   <section id="home">
     <h1>Empathy <span>on the Edge</span></h1>
     <p class="lede">Entraînement QCM sur l'article de Battarbee, Fulton Suri et Gibbs Howard (Rotman Management, Winter 2015). Questions en anglais, explications en français.</p>
-    <div class="modes">
-      <button class="mode" data-mode="1">Faits et cas<small>12 questions</small></button>
-      <button class="mode" data-mode="2">Concepts<small>15 questions</small></button>
-      <button class="mode" data-mode="3">Difficile<small>27 questions</small></button>
-      <button class="mode" data-mode="all">Tout l'article<small>54 questions</small></button>
-      <button class="mode" data-mode="missed" id="missedBtn">Mes erreurs<small id="missedCount">aucune pour l'instant</small></button>
+    <div class="who">
+      <label for="name">Ton prénom</label>
+      <input id="name" maxlength="30" autocomplete="given-name" placeholder="ex. Guillaume">
     </div>
+    <div class="modes" id="modes"></div>
     <label class="toggle"><input type="checkbox" id="shuffle" checked> Mélanger questions et réponses</label>
+
+    <h2>Classement</h2>
+    <div class="board" id="board"><p class="note">Chargement des scores…</p></div>
+    <p class="note" id="boardNote"></p>
+    <div class="detail" id="detail" hidden></div>
+
+    <h2>Questions les plus ratées</h2>
+    <ol class="hard" id="hardest"></ol>
   </section>
 
   <section id="quiz" hidden>
@@ -139,11 +141,12 @@
     <div class="signal" id="signalEnd" aria-hidden="true"></div>
     <p class="score" id="score"></p>
     <p id="verdict"></p>
+    <p class="note" id="saveNote"></p>
     <div class="actions">
       <button class="btn" id="retryWrong">Refaire mes erreurs</button>
-      <button class="btn ghost" id="home2">Changer de série</button>
+      <button class="btn ghost" id="home2">Voir le classement</button>
     </div>
-    <div class="review" id="review"></div>
+    <div id="review"></div>
   </section>
 
   <footer>Outil de révision personnel. L'article reste la propriété de Rotman Management.</footer>
@@ -198,7 +201,7 @@ const QUESTIONS = [
               "Rural Chinese families' healthcare choices, for a Chinese hospital",
               "Young American women's birth-control decisions, for a US nonprofit"],
     answer: 1,
-    why: "Jour 1 : 4 profils et 4 interviews avec interprète. Jours 2-3 : médecins pratiquant l'avortement, pharmaciens, « love hotel » à Shanghai. Jour 4 : les clients repensent leur offre. L'option d, c'est Bedsider : ne pas confondre." },
+    why: "Jour 1 : 4 profils et 4 interviews avec interprète. Jours 2-3 : médecins pratiquant l'avortement, pharmaciens, « love hotel » à Shanghai. Jour 4 : les clients repensent leur offre. Les jeunes Américaines, c'est le cas Bedsider : ne pas confondre." },
   { set: 1, q: "The Shanghai 'love hotel' visited during the journey rented rooms in increments of:",
     options: ["One hour", "Two hours", "Three hours", "Half a day"],
     answer: 2,
@@ -210,7 +213,7 @@ const QUESTIONS = [
   { set: 1, q: "Which of the following was NOT mentioned as something IDEO teams did to develop emotional resonance?",
     options: ["Shadowing sales representatives and bank tellers", "Sleeping on rubber sheets in an elder-care facility", "Participating in gruelling endurance events", "Spending a night as a patient in an emergency room"],
     answer: 3,
-    why: "Les trois exemples du texte sont a, b et c. Une légende photo mentionne aussi un designer qui se fait épiler le torse pour les patients soignés pour des plaies. Rien sur les urgences." },
+    why: "Le texte cite les commerciaux et guichetiers, les draps en caoutchouc et les épreuves d'endurance. Une légende photo mentionne aussi un designer qui se fait épiler le torse pour les patients soignés pour des plaies. Rien sur les urgences." },
 
   // ---------- SET 2 : Concepts & reasoning ----------
   { set: 2, q: "Which statement best captures the article's central argument?",
@@ -287,8 +290,7 @@ const QUESTIONS = [
   { set: 2, q: "According to the article, what is driving many companies to adopt new practices around energy, sourcing, production and sustainability?",
     options: ["Shorter product life cycles", "Being held accountable for their long-term social and environmental impacts", "The decline of brand loyalty", "Stricter consumer-protection regulation"],
     answer: 1,
-    why: "Les produits n'ont jamais été conçus en vase clos, mais tout apparaît aujourd'hui plus clairement lié à un écosystème plus large." }
-,
+    why: "Les produits n'ont jamais été conçus en vase clos, mais tout apparaît aujourd'hui plus clairement lié à un écosystème plus large." },
   // ---------- SET 3 : Hard ----------
   { set: 3, q: "Which of the following statements is NOT supported by the article?",
     options: ["Empathic design first appeared in business literature in the early 2000s",
@@ -463,37 +465,64 @@ const QUESTIONS = [
               "Suzanne Gibbs Howard is an Executive Director at IDEO",
               "Tim Brown co-authored the article"],
     answer: 2,
-    why: "Battarbee : Senior Design Researcher, PhD en UX. Fulton Suri : Partner et Chief Creative Officer. Gibbs Howard : Executive Director. Tim Brown est seulement cité." }];
+    why: "Battarbee : Senior Design Researcher, PhD en UX. Fulton Suri : Partner et Chief Creative Officer. Gibbs Howard : Executive Director. Tim Brown est seulement cité." }
 
+];
 </script>
 <script>
+// ===== CONFIG : colle ici l'URL de ton Google Apps Script (entre les guillemets) =====
+const SHEET_URL = "";
+// =====================================================================================
+
 (function () {
   const $ = (id) => document.getElementById(id);
-  const STORE = "empathy-quiz-missed";
-  let deck = [], i = 0, good = 0, results = [], answered = false;
+  const MODES = { "1": "Faits et cas", "2": "Concepts", "3": "Difficile", "all": "Tout l'article", "missed": "Mes erreurs" };
+  let deck = [], i = 0, good = 0, results = [], answered = false, currentMode = "", records = [];
 
-  function loadMissed() {
-    try { return JSON.parse(localStorage.getItem(STORE)) || []; } catch (e) { return []; }
-  }
-  function saveMissed(list) {
-    try { localStorage.setItem(STORE, JSON.stringify([...new Set(list)])); } catch (e) {}
-  }
-  function refreshMissed() {
-    const n = loadMissed().length;
-    $("missedCount").textContent = n ? n + " question" + (n > 1 ? "s" : "") + " à revoir" : "aucune pour l'instant";
-    $("missedBtn").disabled = n === 0;
-  }
-  function shuffle(a) {
-    a = a.slice();
-    for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; }
-    return a;
-  }
+  // ---------- stockage local ----------
+  const ls = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const key = (n) => n.trim().toLowerCase();
+  const myName = () => $("name").value.trim();
+  const missedKey = () => "empathy-missed:" + key(myName());
+
+  function shuffle(a) { a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
   function show(id) { ["home", "quiz", "result"].forEach(s => $(s).hidden = s !== id); window.scrollTo(0, 0); }
+  function el(tag, text, cls) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; }
 
+  // ---------- accueil ----------
+  function buildModes() {
+    const box = $("modes"); box.innerHTML = "";
+    const count = (m) => m === "all" ? QUESTIONS.length : m === "missed" ? ls.get(missedKey(), []).length : QUESTIONS.filter(q => String(q.set) === m).length;
+    Object.keys(MODES).forEach(m => {
+      const n = count(m);
+      if (m !== "missed" && n === 0) return;
+      const b = el("button", MODES[m], "mode");
+      b.appendChild(el("small", m === "missed" && n === 0 ? "aucune pour l'instant" : n + " question" + (n > 1 ? "s" : "")));
+      b.disabled = !myName() || n === 0;
+      b.title = myName() ? "" : "Entre ton prénom d'abord";
+      b.addEventListener("click", () => startMode(m));
+      box.appendChild(b);
+    });
+  }
+  $("name").value = ls.get("empathy-name", "");
+  $("name").addEventListener("input", () => { ls.set("empathy-name", myName()); buildModes(); renderBoard(); });
+
+  function startMode(m) {
+    currentMode = m;
+    const all = QUESTIONS.map((_, k) => k);
+    if (m === "all") start(all);
+    else if (m === "missed") start(ls.get(missedKey(), []).filter(k => k < QUESTIONS.length));
+    else start(all.filter(k => String(QUESTIONS[k].set) === m));
+  }
+
+  // ---------- quiz ----------
   function start(indices) {
+    if (!indices.length) return;
     const mix = $("shuffle").checked;
-    const order = mix ? shuffle(indices) : indices;
-    deck = order.map(idx => {
+    deck = (mix ? shuffle(indices) : indices).map(idx => {
       const src = QUESTIONS[idx];
       let opts = src.options.map((text, k) => ({ text, ok: k === src.answer }));
       if (mix) opts = shuffle(opts);
@@ -503,7 +532,6 @@ const QUESTIONS = [
     $("signal").innerHTML = deck.map(() => '<span class="tick"></span>').join("");
     show("quiz"); render();
   }
-
   function render() {
     answered = false;
     const item = deck[i];
@@ -513,84 +541,173 @@ const QUESTIONS = [
     $("qText").textContent = item.q;
     $("opts").innerHTML = "";
     item.opts.forEach((o, k) => {
-      const b = document.createElement("button");
-      b.className = "opt";
-      b.innerHTML = '<span class="key">' + (k + 1) + '</span><span></span>';
-      b.lastChild.textContent = o.text;
+      const b = el("button", undefined, "opt");
+      b.appendChild(el("span", String(k + 1), "key")); b.appendChild(el("span", o.text));
       b.addEventListener("click", () => answer(k));
       $("opts").appendChild(b);
     });
     $("why").hidden = true; $("next").hidden = true;
     $("opts").firstChild.focus({ preventScroll: true });
   }
-
   function answer(k) {
-    if (answered) return;
-    answered = true;
+    if (answered) return; answered = true;
     const item = deck[i], ok = item.opts[k].ok;
-    const buttons = [...$("opts").children];
-    buttons.forEach((b, n) => {
+    [...$("opts").children].forEach((b, n) => {
       b.disabled = true;
-      if (item.opts[n].ok) b.classList.add("correct");
-      else if (n === k) b.classList.add("chosen-wrong");
+      if (item.opts[n].ok) b.classList.add("correct"); else if (n === k) b.classList.add("chosen-wrong");
     });
     if (ok) good++;
     results.push({ item, chosen: k, ok });
-    const tick = $("signal").children[i];
-    tick.classList.remove("now"); tick.classList.add(ok ? "ok" : "ko");
-    $("why").className = "why " + (ok ? "ok" : "ko");
-    $("why").innerHTML = "<strong>" + (ok ? "Juste." : "Raté.") + "</strong><span></span>";
-    $("why").lastChild.textContent = item.why;
+    const tick = $("signal").children[i]; tick.classList.remove("now"); tick.classList.add(ok ? "ok" : "ko");
+    $("why").className = "why " + (ok ? "ok" : "ko"); $("why").innerHTML = "";
+    $("why").appendChild(el("strong", ok ? "Juste." : "Raté.")); $("why").appendChild(el("span", item.why));
     $("why").hidden = false;
     $("running").textContent = good + " juste" + (good > 1 ? "s" : "");
     $("next").textContent = i + 1 < deck.length ? "Question suivante" : "Voir mon score";
     $("next").hidden = false; $("next").focus({ preventScroll: true });
   }
-
   function next() { if (i + 1 < deck.length) { i++; render(); } else finish(); }
 
   function finish() {
-    let missed = loadMissed();
-    results.forEach(r => {
-      if (r.ok) missed = missed.filter(x => x !== r.item.idx);
-      else missed.push(r.item.idx);
-    });
-    saveMissed(missed); refreshMissed();
+    let missed = ls.get(missedKey(), []);
+    results.forEach(r => { if (r.ok) missed = missed.filter(x => x !== r.item.idx); else missed.push(r.item.idx); });
+    ls.set(missedKey(), [...new Set(missed)]);
+
+    const rec = { date: new Date().toISOString(), name: myName(), mode: currentMode, score: good, total: deck.length,
+                  missed: results.filter(r => !r.ok).map(r => r.item.idx).join(",") };
+    saveRecord(rec);
 
     const pct = Math.round(100 * good / deck.length);
-    $("score").innerHTML = good + "<small> / " + deck.length + "</small>";
+    $("score").innerHTML = ""; $("score").append(String(good)); $("score").appendChild(el("small", " / " + deck.length));
     $("verdict").textContent = pct >= 85 ? "Prêt pour l'examen." : pct >= 60 ? "Bonne base, revois les explications ci-dessous." : "Relis les cas et le classement scaling / sustaining, puis refais tes erreurs.";
     $("signalEnd").innerHTML = results.map(r => '<span class="tick ' + (r.ok ? "ok" : "ko") + '"></span>').join("");
-
     const wrong = results.filter(r => !r.ok);
     $("retryWrong").hidden = wrong.length === 0;
-    $("review").innerHTML = wrong.length ? "<h2>À revoir</h2>" : "";
+    $("review").innerHTML = "";
+    if (wrong.length) $("review").appendChild(el("h2", "À revoir"));
     wrong.forEach(r => {
-      const div = document.createElement("div");
-      div.className = "review-item";
-      const right = r.item.opts.find(o => o.ok).text;
-      div.innerHTML = "<p></p><p class='ans'></p><p class='yours'></p><p class='ex'></p>";
-      div.children[0].textContent = r.item.q;
-      div.children[1].textContent = "Bonne réponse : " + right;
-      div.children[2].textContent = "Ta réponse : " + r.item.opts[r.chosen].text;
-      div.children[3].textContent = r.item.why;
-      $("review").appendChild(div);
+      const d = el("div", undefined, "review-item");
+      d.appendChild(el("p", r.item.q));
+      d.appendChild(el("p", "Bonne réponse : " + r.item.opts.find(o => o.ok).text, "ans"));
+      d.appendChild(el("p", "Ta réponse : " + r.item.opts[r.chosen].text, "yours"));
+      d.appendChild(el("p", r.item.why, "ex"));
+      $("review").appendChild(d);
     });
-    show("result");
+    buildModes(); show("result");
   }
 
-  document.querySelectorAll(".mode").forEach(b => b.addEventListener("click", () => {
-    const m = b.dataset.mode;
-    const all = QUESTIONS.map((_, k) => k);
-    if (m === "all") start(all);
-    else if (m === "missed") start(loadMissed().filter(k => k < QUESTIONS.length));
-    else start(all.filter(k => QUESTIONS[k].set === Number(m)));
-  }));
-  $("next").addEventListener("click", next);
-  $("quit").addEventListener("click", () => show("home"));
-  $("home2").addEventListener("click", () => show("home"));
-  $("retryWrong").addEventListener("click", () => start(results.filter(r => !r.ok).map(r => r.item.idx)));
+  // ---------- scores : Google Sheet ou local ----------
+  function saveRecord(rec) {
+    records.push(rec);
+    if (!SHEET_URL) {
+      ls.set("empathy-records", records);
+      $("saveNote").textContent = "Score enregistré sur cet appareil.";
+      return;
+    }
+    $("saveNote").textContent = "Envoi du score…";
+    fetch(SHEET_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) })
+      .then(() => { $("saveNote").textContent = "Score enregistré dans le classement commun."; })
+      .catch(() => { $("saveNote").textContent = "Le score n'a pas pu être envoyé (connexion ?). Il apparaîtra seulement sur cet appareil."; });
+  }
+  function loadRecords() {
+    if (!SHEET_URL) {
+      records = ls.get("empathy-records", []);
+      $("boardNote").textContent = "Classement de cet appareil uniquement. Pour un classement commun, ajoute l'URL du Google Sheet dans le code (SHEET_URL).";
+      renderBoard(); return;
+    }
+    fetch(SHEET_URL).then(r => r.json()).then(rows => {
+      records = Array.isArray(rows) ? rows.filter(r => r && r.name) : [];
+      $("boardNote").textContent = "Classement commun à tous les joueurs.";
+      renderBoard();
+    }).catch(() => {
+      $("board").innerHTML = ""; $("board").appendChild(el("p", "Impossible de charger le classement. Vérifie l'URL du Google Sheet ou ta connexion.", "note"));
+    });
+  }
 
+  function statsByPerson() {
+    const map = {};
+    records.forEach(r => {
+      const k = key(String(r.name)); if (!k) return;
+      const total = Number(r.total) || 0, score = Number(r.score) || 0; if (!total) return;
+      const p = map[k] || (map[k] = { name: String(r.name).trim(), games: [], score: 0, total: 0, best: 0, last: "" });
+      p.games.push(r); p.score += score; p.total += total;
+      p.best = Math.max(p.best, score / total);
+      if (String(r.date) > p.last) p.last = String(r.date);
+    });
+    return Object.values(map).sort((a, b) => b.score / b.total - a.score / a.total || b.games.length - a.games.length);
+  }
+  const pctTxt = (x) => Math.round(100 * x) + " %";
+  const dateTxt = (d) => { const t = new Date(d); return isNaN(t) ? "" : t.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }); };
+
+  function renderBoard() {
+    const people = statsByPerson();
+    const board = $("board"); board.innerHTML = "";
+    if (!people.length) { board.appendChild(el("p", "Pas encore de score. Termine une série pour apparaître ici.", "note")); renderHardest(); return; }
+    const t = el("table"); const head = el("tr");
+    [["#", "num"], ["Prénom"], ["Parties", "num"], ["Moyenne"], ["Meilleur", "num"], ["Dernière", "num"]].forEach(([h, c]) => head.appendChild(el("th", h, c)));
+    const thead = el("thead"); thead.appendChild(head); t.appendChild(thead);
+    const tb = el("tbody");
+    people.forEach((p, n) => {
+      const avg = p.score / p.total, tr = el("tr", undefined, key(p.name) === key(myName()) ? "me" : "");
+      tr.appendChild(el("td", String(n + 1), "num"));
+      const td = el("td"); const nb = el("button", p.name, "namebtn"); nb.addEventListener("click", () => renderDetail(p)); td.appendChild(nb); tr.appendChild(td);
+      tr.appendChild(el("td", String(p.games.length), "num"));
+      const avgTd = el("td"); const bar = el("span", undefined, "bar"); bar.style.width = Math.max(4, Math.round(avg * 80)) + "px";
+      avgTd.appendChild(bar); avgTd.append(pctTxt(avg)); tr.appendChild(avgTd);
+      tr.appendChild(el("td", pctTxt(p.best), "num"));
+      tr.appendChild(el("td", dateTxt(p.last), "num"));
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); board.appendChild(t);
+    renderHardest();
+  }
+
+  function missedCounts(games) {
+    const asked = {}, wrong = {};
+    games.forEach(g => {
+      String(g.missed || "").split(",").filter(Boolean).forEach(x => { wrong[x] = (wrong[x] || 0) + 1; });
+    });
+    return wrong;
+  }
+
+  function renderDetail(p) {
+    const d = $("detail"); d.innerHTML = ""; d.hidden = false;
+    d.appendChild(el("h3", p.name));
+    d.appendChild(el("p", p.games.length + " partie" + (p.games.length > 1 ? "s" : "") + ", moyenne " + pctTxt(p.score / p.total) + ", meilleur score " + pctTxt(p.best) + "."));
+    Object.keys(MODES).forEach(m => {
+      const gs = p.games.filter(g => String(g.mode) === m); if (!gs.length) return;
+      const s = gs.reduce((a, g) => a + Number(g.score), 0), tot = gs.reduce((a, g) => a + Number(g.total), 0);
+      d.appendChild(el("p", MODES[m] + " : " + pctTxt(s / tot) + " sur " + gs.length + " partie" + (gs.length > 1 ? "s" : "")));
+    });
+    const recent = p.games.slice().sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 5);
+    d.appendChild(el("p", "Dernières parties : " + recent.map(g => g.score + "/" + g.total + " (" + (MODES[g.mode] || g.mode) + ", " + dateTxt(g.date) + ")").join(" ; ")));
+    const w = missedCounts(p.games);
+    const top = Object.keys(w).sort((a, b) => w[b] - w[a]).slice(0, 3).filter(x => QUESTIONS[x]);
+    if (top.length) {
+      d.appendChild(el("p", "Questions qui lui posent le plus de problèmes :"));
+      const ul = el("ul"); top.forEach(x => ul.appendChild(el("li", QUESTIONS[x].q + " (ratée " + w[x] + " fois)"))); d.appendChild(ul);
+    }
+    const close = el("button", "Fermer", "btn ghost small"); close.addEventListener("click", () => { d.hidden = true; }); d.appendChild(close);
+    d.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function renderHardest() {
+    const box = $("hardest"); box.innerHTML = "";
+    const w = missedCounts(records);
+    const top = Object.keys(w).sort((a, b) => w[b] - w[a]).slice(0, 5).filter(x => QUESTIONS[x]);
+    if (!top.length) { box.appendChild(el("li", "Rien pour l'instant.")); return; }
+    top.forEach(x => {
+      const li = el("li"); li.appendChild(el("span", "ratée " + w[x] + " fois", "pct")); li.append(" — " + QUESTIONS[x].q);
+      li.appendChild(el("div", "Réponse : " + QUESTIONS[x].options[QUESTIONS[x].answer], "note"));
+      box.appendChild(li);
+    });
+  }
+
+  // ---------- boutons et clavier ----------
+  $("next").addEventListener("click", next);
+  $("quit").addEventListener("click", () => { show("home"); buildModes(); });
+  $("home2").addEventListener("click", () => { show("home"); buildModes(); loadRecords(); });
+  $("retryWrong").addEventListener("click", () => { currentMode = "missed"; start(results.filter(r => !r.ok).map(r => r.item.idx)); });
   document.addEventListener("keydown", (e) => {
     if ($("quiz").hidden) return;
     const n = parseInt(e.key, 10);
@@ -598,7 +715,7 @@ const QUESTIONS = [
     else if (answered && e.key === "Enter" && document.activeElement !== $("next")) { next(); e.preventDefault(); }
   });
 
-  refreshMissed();
+  buildModes(); loadRecords();
 })();
 </script>
 </body>
